@@ -1,0 +1,51 @@
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+
+def calculate_match_score(resume_text, job_description):
+    documents = [resume_text, job_description]
+
+    vectorizer = TfidfVectorizer(
+        lowercase=True,
+        stop_words="english"
+    )
+
+    tfidf_matrix = vectorizer.fit_transform(documents)
+
+    similarity = cosine_similarity(
+        tfidf_matrix[0:1],
+        tfidf_matrix[1:2]
+    )[0][0]
+
+    return round(similarity * 100, 2)
+
+
+def recommend_jobs(resume_text, csv_path="data/job_roles.csv"):
+
+    jobs = pd.read_csv(csv_path)
+
+    results = []
+
+    for _, row in jobs.iterrows():
+
+        job_role = row["Job Role"]
+        required_skills = row["Required Skills"]
+
+        score = calculate_match_score(
+            resume_text,
+            required_skills
+        )
+
+        results.append({
+            "Job Role": job_role,
+            "Match Score": score
+        })
+
+    results = sorted(
+        results,
+        key=lambda x: x["Match Score"],
+        reverse=True
+    )
+
+    return results
