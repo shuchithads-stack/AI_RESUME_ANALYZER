@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from pathlib import Path
 from pypdf import PdfReader
 from docx import Document
 
@@ -178,7 +179,6 @@ if uploaded_file is not None:
             "🏆 Top 3 Recommended Jobs"
         )
 
-
         top_three = results[:3]
 
 
@@ -212,10 +212,18 @@ if uploaded_file is not None:
         )
 
 
-        # Read job roles CSV
+        # ==================================================
+        # READ JOB ROLES CSV
+        # ==================================================
+
+        # Find the folder containing app.py
+        BASE_DIR = Path(__file__).resolve().parent
+
+        # job_roles.csv is in the project root
+        job_roles_path = BASE_DIR / "job_roles.csv"
 
         job_roles = pd.read_csv(
-            "data/job_roles.csv"
+            job_roles_path
         )
 
 
@@ -386,7 +394,6 @@ AI RESUME ANALYZER & JOB RECOMMENDATION SYSTEM
 RESUME
 ------
 {uploaded_file.name}
-
 
 SKILLS FOUND
 ------------
